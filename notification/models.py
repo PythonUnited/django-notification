@@ -1,5 +1,7 @@
 import datetime
 
+from django.template.loader import render_to_string
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -12,7 +14,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.template import Context
-from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, get_language, activate
 
@@ -20,7 +21,7 @@ from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes import fields
 
 if 'mailer' in settings.INSTALLED_APPS:
     from mailer import send_html_mail
@@ -110,7 +111,7 @@ class NoticeManager(models.Manager):
         """
         lookup_kwargs = {}
         if sent:
-            lookup_kwarg["sender"] = user
+            lookup_kwargs["sender"] = user
         else:
             lookup_kwargs["recipient"] = user
 
@@ -255,7 +256,7 @@ def get_formatted_messages(formats, label, context):
             context.autoescape = True
         format_templates[format] = render_to_string((
             "notification/%s/%s" % (label, format),
-            "notification/%s" % format), context_instance=context)
+            "notification/%s" % format), context)
     return format_templates
 
 
@@ -323,17 +324,15 @@ def send_now(users, label, extra_context=None, on_site=True, sender=None):
         messages = get_formatted_messages(formats, label, context)
         
         # Strip newlines from subject
-        subject = "".join(render_to_string("notification/email_subject.txt", {
-            "message": messages["short.txt"],
-        }, context).splitlines())
+        context.update({"message": messages["short.txt"]})
+        subject = "".join(render_to_string(
+            "notification/email_subject.txt", context).splitlines())
         
-        body = render_to_string("notification/email_body.txt", {
-            "message": messages["full.txt"],
-        }, context)
+        context.update({"message": messages["full.txt"]})
+        body = render_to_string("notification/email_body.txt", context)
         
-        body_html = render_to_string("notification/email_body.html", {
-            "message": messages["full.html"],
-        }, context)
+        context.update({"message": messages["full.html"]})
+        body_html = render_to_string("notification/email_body.html", context)
         
         notice = Notice.objects.create(recipient=user, message=messages["notice.html"],
             notice_type=notice_type, on_site=on_site, sender=sender)
@@ -411,7 +410,7 @@ class ObservedItem(models.Model):
     
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    observed_object = generic.GenericForeignKey("content_type", "object_id")
+    observed_object = fields.GenericForeignKey("content_type", "object_id")
     
     notice_type = models.ForeignKey(NoticeType, verbose_name=_("notice type"))
     
