@@ -352,6 +352,33 @@ class NotificationRemoveView(InlineActionMixin, NotificationMixin, View):
         return 0, ""
 
 
+class NotificationToggleSeenView(InlineActionMixin, NotificationMixin, View):
+
+    template_name = "notification/notices_block.html"
+    handle_on_get = True
+
+    def get_context_data(self, **kwargs):
+
+        data = InlineActionMixin.get_context_data(self, **kwargs)
+        data.update(NotificationMixin.get_context_data(self, **kwargs))
+
+        return data
+
+    def handle_request(self):
+
+        """ Add or remove relation"""
+
+        ids = self.request.POST.getlist("ids[]")
+
+        if ids:
+            for notice in Notice.objects.notices_for(
+                    self.request.user, on_site=True).filter(id__in=ids):
+                notice.unseen = not notice.unseen
+                notice.save()
+
+        return 0, ""
+
+
 class JSONDeleteView(JSONResponseMixin, BaseDeleteView):
 
     def get_context_data(self, **kwargs):

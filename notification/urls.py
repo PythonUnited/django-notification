@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from notification.views import notices, mark_all_seen, feed_for_user, single, \
     notice_settings, \
     NoticeMarkSeenView, NoticeMarkUnseenView, NotificationRemoveView, \
-    NoticeJSONDeleteView
+    NoticeJSONDeleteView, NotificationToggleSeenView
 
 urlpatterns = [
     url(r"^$", notices, name="notification_notices"),
@@ -34,5 +34,9 @@ urlpatterns = [
     url(r"^notice_remove$",
         login_required(NotificationRemoveView.as_view()),
         name="notices_remove"),
+
+    url(r"^notice_toggle_seen$",
+        login_required(NotificationToggleSeenView.as_view()),
+        name="notices_toggle_seen"),
 
 ]
