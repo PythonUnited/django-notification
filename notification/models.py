@@ -339,8 +339,11 @@ def send_now(users, label, extra_context=None, on_site=True, sender=None):
         if should_send(user, notice_type, "1") and user.email and user.is_active: # Email
             recipients.append(user.email)
 
-        if send_html_mail and body_html:
-            send_html_mail(subject, body, body_html, settings.DEFAULT_FROM_EMAIL, recipients)
+        if body_html:
+            # send_html_mail(subject, body, body_html, settings.DEFAULT_FROM_EMAIL, recipients)
+
+            send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients,
+                          html_message=body_html)
         else:
             send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
     
