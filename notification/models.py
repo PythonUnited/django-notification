@@ -7,6 +7,7 @@ try:
 except ImportError:
     import pickle
 
+from django.apps import apps
 from django.db import models
 from django.db.models.query import QuerySet
 from django.conf import settings
@@ -233,7 +234,7 @@ def get_notification_language(user):
     if getattr(settings, "NOTIFICATION_LANGUAGE_MODULE", False):
         try:
             app_label, model_name = settings.NOTIFICATION_LANGUAGE_MODULE.split(".")
-            model = models.get_model(app_label, model_name)
+            model = apps.get_model(app_label, model_name=model_name)
             language_model = model._default_manager.get(user__id__exact=user.id)
             if hasattr(language_model, "language"):
                 return language_model.language
