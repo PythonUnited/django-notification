@@ -217,11 +217,11 @@ def create_notice_type(label, display, description, default=2, verbosity=1):
         if updated:
             notice_type.save()
             if verbosity > 1:
-                print "Updated %s NoticeType" % label
+                print("Updated %s NoticeType" % label)
     except NoticeType.DoesNotExist:
         NoticeType(label=label, display=display, description=description, default=default).save()
         if verbosity > 1:
-            print "Created %s NoticeType" % label
+            print("Created %s NoticeType" % label)
 
 
 def get_notification_language(user):
@@ -282,9 +282,9 @@ def send_now(users, label, extra_context=None, on_site=True, sender=None):
     protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
     current_site = Site.objects.get_current()
     
-    notices_url = u"%s://%s%s" % (
+    notices_url = "%s://%s%s" % (
         protocol,
-        unicode(current_site),
+        str(current_site),
         reverse("notification_notices"),
     )
     
