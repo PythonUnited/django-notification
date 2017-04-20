@@ -1,6 +1,7 @@
 import json
 
 from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.template import RequestContext
 
@@ -48,10 +49,17 @@ def notices(request):
     else:
         only_show = None
     
-    return render_to_response("notification/notices.html", {
+    # return render_to_response("notification/notices.html", {
+    #     "notices": notices,
+    #     "only_show" : only_show,
+    # }, context_instance=RequestContext(request))
+    context = {
         "notices": notices,
         "only_show" : only_show,
-    }, context_instance=RequestContext(request))
+    }
+
+    return render(request, 'notification/notices.html', context)
+
     
 @login_required
 def notice_settings(request):
