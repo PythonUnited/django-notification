@@ -1,14 +1,9 @@
 import json
 
-from django.shortcuts import render_to_response, get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.template import RequestContext
 
 from django.contrib.auth.decorators import login_required
-from django.views.generic import DetailView
-from django.views.generic import View
-from django.views.generic.edit import BaseDeleteView
 
 from notification.models import *
 from notification.decorators import basic_auth_required, simple_basic_auth_callback
@@ -24,6 +19,7 @@ def feed_for_user(request):
     response = HttpResponse(mimetype=feedgen.mime_type)
     feedgen.write(response, 'utf-8')
     return response
+
 
 @login_required
 def notices(request):
@@ -48,17 +44,11 @@ def notices(request):
         notices = notices.filter(notice_type__in=only_show)            
     else:
         only_show = None
-    
-    # return render_to_response("notification/notices.html", {
-    #     "notices": notices,
-    #     "only_show" : only_show,
-    # }, context_instance=RequestContext(request))
-    context = {
-        "notices": notices,
-        "only_show" : only_show,
-    }
 
-    return render(request, 'notification/notices.html', context)
+    return render(request, 'notification/notices.html', {
+        "notices": notices,
+        "only_show": only_show,
+    })
 
     
 @login_required
@@ -109,10 +99,10 @@ def notice_settings(request):
         "rows": settings_table,
     }
     
-    return render_to_response("notification/notice_settings.html", {
+    return render(request, "notification/notice_settings.html", {
         "notice_types": notice_types,
         "notice_settings": notice_settings,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -138,9 +128,9 @@ def single(request, id, mark_seen=True):
         if mark_seen and notice.unseen:
             notice.unseen = False
             notice.save()
-        return render_to_response("notification/single.html", {
+        return render(request, "notification/single.html", {
             "notice": notice,
-        }, context_instance=RequestContext(request))
+        })
     raise Http404
 
 
@@ -214,7 +204,7 @@ def mark_all_seen(request):
     return HttpResponseRedirect(reverse("notification_notices"))
 
 
-class NoticeMarkSeenView(DetailView):
+addclass NoticeMarkSeenView(DetailView):
 
     template_name = "notification/snippets/notice.html"
     model = Notice
