@@ -204,7 +204,7 @@ def mark_all_seen(request):
     return HttpResponseRedirect(reverse("notification_notices"))
 
 
-addclass NoticeMarkSeenView(DetailView):
+class NoticeMarkSeenView(DetailView):
 
     template_name = "notification/snippets/notice.html"
     model = Notice
