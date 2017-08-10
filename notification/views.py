@@ -4,10 +4,16 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 
 from django.contrib.auth.decorators import login_required
+<<<<<<< HEAD
 from django.views.generic import DetailView
 from django.views.generic import View
 from django.views.generic.edit import BaseDeleteView
 
+=======
+from django.views import View
+from django.views.generic import DetailView
+from django.views.generic.edit import BaseDeleteView
+>>>>>>> Added missing imports
 
 from notification.models import *
 from notification.decorators import basic_auth_required, simple_basic_auth_callback
