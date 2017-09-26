@@ -250,10 +250,11 @@ def get_formatted_messages(formats, label, context):
     format_templates = {}
     for format in formats:
         # conditionally turn off autoescaping for .txt extensions in format
-        if format.endswith(".txt"):
-            context.autoescape = False
-        else:
-            context.autoescape = True
+        if isinstance(context, Context):
+            if format.endswith(".txt"):
+                context.autoescape = False
+            else:
+                context.autoescape = True
         format_templates[format] = render_to_string((
             "notification/%s/%s" % (label, format),
             "notification/%s" % format), context)
@@ -312,13 +313,13 @@ def send_now(users, label, extra_context=None, on_site=True, sender=None):
             activate(language)
 
         # update context with user specific translations
-        context = Context({
+        context = {
             "recipient": user,
             "sender": sender,
             "notice": ugettext(notice_type.display),
             "notices_url": notices_url,
             "current_site": current_site,
-        })
+        }
         context.update(extra_context)
 
         # get prerendered format messages
