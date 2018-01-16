@@ -28,7 +28,7 @@ class Command(BaseCommand):
         notices = Notice.objects.filter(added__lte=limit)
         if dryrun:
             count = notices.count()
-            print 'Total count of notices to be deleted: %d' % count
+            print('Total count of notices to be deleted: %d' % count)
         else:
             notices.delete()
 
