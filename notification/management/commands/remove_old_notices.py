@@ -1,11 +1,8 @@
 # -*- coding:utf-8 -*-
 from time import time
 from datetime import datetime
-from optparse import make_option
-
 from django.core.management.base import BaseCommand
 from django.conf import settings
-
 from notification.models import Notice
 
 
@@ -13,12 +10,14 @@ class Command(BaseCommand):
     """Remove old notices"""
     help = __doc__
 
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
+    def add_arguments(self, parser):
+
+        parser.add_argument(
+            '--dry-run',
             action='store_true',
             dest='dryrun',
             default=False,
-            help='Count the number of elements that would be deleted, without actually doing it'),
+            help='Count the number of elements that would be deleted, without actually doing it'
         )
 
     def handle(self, *args, **options):
