@@ -348,14 +348,20 @@ def send_now(users, label, extra_context=None, on_site=True, sender=None):
         
         notice = Notice.objects.create(recipient=user, message=messages["notice.html"],
             notice_type=notice_type, on_site=on_site, sender=sender)
-        if should_send(user, notice_type, "1") and user.email and user.is_active: # Email
-            recipients.append(user.email)
 
-        if send_html_mail and body_html:
-            send_html_mail(subject, body, body_html, settings.DEFAULT_FROM_EMAIL, recipients)
-        else:
-            send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
-    
+        # Hack alert! Don't send e-mail to yourself...
+        if notice_type.label != 'you_sent_message':
+            if should_send(user, notice_type, "1") and user.email and user.is_active: # Email
+                recipients.append(user.email)
+
+            if body_html:
+                # send_html_mail(subject, body, body_html, settings.DEFAULT_FROM_EMAIL, recipients)
+
+                send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients,
+                              html_message=body_html)
+            else:
+                send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
+
     # reset environment to original language
     activate(current_language)
 
