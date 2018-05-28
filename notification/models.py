@@ -257,10 +257,11 @@ def get_formatted_messages(formats, label, context):
     format_templates = {}
     for format in formats:
         # conditionally turn off autoescaping for .txt extensions in format
-        if format.endswith(".txt"):
-            context.autoescape = False
-        else:
-            context.autoescape = True
+        # MJB dict as context does nog support .autoescape Probably not needed
+        # if format.endswith(".txt"):
+        #     context.autoescape = False
+        # else:
+        #     context.autoescape = True
         format_templates[format] = render_to_string(
             (
                 "notification/%s/%s" % (label, format),
