@@ -26,13 +26,9 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-if 'mailer' in settings.INSTALLED_APPS:
-    from mailer import send_html_mail
-else:
-    send_html_mail = False
-
 QUEUE_ALL = getattr(settings, "NOTIFICATION_QUEUE_ALL", False)
-
+NOTIFICATION_EMAIL_ENABLED = getattr(settings,
+                                     "NOTIFICATION_EMAIL_ENABLED", True)
 
 class LanguageStoreNotAvailable(Exception):
     pass
@@ -351,7 +347,7 @@ def send_now(users, label, extra_context=None, on_site=True, sender=None):
             notice_type=notice_type, on_site=on_site, sender=sender)
 
         # Hack alert! Don't send e-mail to yourself...
-        if notice_type.label != 'you_sent_message':
+        if NOTIFICATION_EMAIL_ENABLED and notice_type.label != 'you_sent_message':
             if should_send(user, notice_type, "1") and user.email and user.is_active: # Email
                 recipients.append(user.email)
 
